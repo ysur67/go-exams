@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"example.com/exams/exam"
-	examhttp "example.com/exams/exam/http"
+	examhttp "example.com/exams/exam/http/exam"
+	questhttp "example.com/exams/exam/http/question"
 	"example.com/exams/exam/repository/postgres"
 	"example.com/exams/exam/usecase"
 	"github.com/gin-gonic/gin"
@@ -22,16 +23,16 @@ import (
 type App struct {
 	server *http.Server
 
-	examUseCase exam.ExamUseCase
+	examUseCase     exam.ExamUseCase
+	questionUseCase exam.QuestionUseCase
 }
 
 func NewApp() *App {
 	db := initDb()
 
-	examRepository := postgres.NewExamRepository(db)
-	useCase := usecase.NewExamUseCase(examRepository)
 	return &App{
-		examUseCase: useCase,
+		examUseCase:     usecase.NewExamUseCase(postgres.NewExamRepository(db)),
+		questionUseCase: usecase.NewQuestoinUseCase(postgres.NewQuestionRepository(db)),
 	}
 }
 
@@ -45,6 +46,7 @@ func (app *App) Run(port string) error {
 	api := router.Group("/api")
 
 	examhttp.RegisterEndPoints(api, app.examUseCase)
+	questhttp.RegisterEndPoints(api, app.questionUseCase)
 
 	// HTTP Server
 	app.server = &http.Server{
