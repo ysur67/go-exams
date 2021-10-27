@@ -28,10 +28,6 @@ func NewHandler(usecase exam.UseCase) *Handler {
 	}
 }
 
-type getResponse struct {
-	exams []Exam
-}
-
 func (handler *Handler) Get(ctx *gin.Context) {
 	exams, err := handler.examUseCase.GetExams(ctx)
 	if err != nil {
@@ -40,12 +36,9 @@ func (handler *Handler) Get(ctx *gin.Context) {
 		return
 	}
 	jsonExams := toReponse(exams)
-	resp := getResponse{
-		exams: jsonExams,
-	}
 	ctx.JSON(
 		http.StatusOK,
-		resp,
+		jsonExams,
 	)
 }
 
