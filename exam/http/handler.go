@@ -19,10 +19,10 @@ type Exam struct {
 }
 
 type Handler struct {
-	examUseCase exam.UseCase
+	examUseCase exam.ExamUseCase
 }
 
-func NewHandler(usecase exam.UseCase) *Handler {
+func NewHandler(usecase exam.ExamUseCase) *Handler {
 	return &Handler{
 		examUseCase: usecase,
 	}

@@ -22,7 +22,7 @@ import (
 type App struct {
 	server *http.Server
 
-	examUseCase exam.UseCase
+	examUseCase exam.ExamUseCase
 }
 
 func NewApp() *App {

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterEndPoints(router *gin.RouterGroup, usecase exam.UseCase) {
+func RegisterEndPoints(router *gin.RouterGroup, usecase exam.ExamUseCase) {
 	h := NewHandler(usecase)
 	exams := router.Group("/exams")
 	{
