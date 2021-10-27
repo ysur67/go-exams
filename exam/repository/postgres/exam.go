@@ -2,11 +2,16 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
 	"example.com/exams/models"
 	"github.com/uptrace/bun"
+)
+
+const (
+	EXAM = "exam"
 )
 
 type Exam struct {
@@ -34,9 +39,10 @@ func (repo *ExamRepository) InitTables(ctx context.Context) {
 func (repo *ExamRepository) GetExams(ctx context.Context) ([]models.Exam, error) {
 	var exams = make([]Exam, 0)
 	err := repo.db.NewSelect().
-		Table("exam").
+		Table(EXAM).
 		Scan(ctx, &exams)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 	return toExams(exams), nil
