@@ -14,7 +14,6 @@ import (
 	"example.com/exams/exam/repository/postgres"
 	"example.com/exams/exam/usecase"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -74,8 +73,12 @@ func (app *App) Run(port string) error {
 }
 
 func initDb() *bun.DB {
-	godotenv.Load()
-	dsn := "postgres://" + os.Getenv("db-username") + ":" + os.Getenv("db-password") + "@" + os.Getenv("db-address") + "/golang?sslmode=disable"
+	dsn := "postgres://" +
+		os.Getenv("db-username") +
+		":" + os.Getenv("db-password") +
+		"@" + os.Getenv("db-address") +
+		"/" + os.Getenv("db-name") + "?sslmode=disable"
+
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	return db
