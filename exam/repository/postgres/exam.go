@@ -48,6 +48,15 @@ func (repo *ExamRepository) GetExams(ctx context.Context) ([]models.Exam, error)
 	return toExams(exams), nil
 }
 
+func (repo *ExamRepository) GetDetailExam(ctx context.Context, examId string) (models.Exam, error) {
+	exam := Exam{}
+	err := repo.db.NewSelect().
+		Table(EXAM).
+		Where("id = ?", examId).
+		Scan(ctx, &exam)
+	return toExam(exam), err
+}
+
 func toExams(exams []Exam) []models.Exam {
 	out := make([]models.Exam, len(exams))
 	for index, exam := range exams {

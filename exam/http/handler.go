@@ -35,14 +35,29 @@ func (handler *Handler) Get(ctx *gin.Context) {
 		fmt.Println(err.Error())
 		return
 	}
-	jsonExams := toReponse(exams)
+	jsonExams := toExams(exams)
 	ctx.JSON(
 		http.StatusOK,
 		jsonExams,
 	)
 }
 
-func toReponse(exams []models.Exam) []Exam {
+func (handler *Handler) GetDetail(ctx *gin.Context) {
+	exam, err := handler.examUseCase.GetDetailExam(ctx, ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest,
+			err.Error(),
+		)
+		return
+	}
+	ctx.JSON(
+		http.StatusOK,
+		toExam(exam),
+	)
+}
+
+func toExams(exams []models.Exam) []Exam {
 	out := make([]Exam, len(exams))
 	for index, exam := range exams {
 		out[index] = toExam(exam)

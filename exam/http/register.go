@@ -10,5 +10,6 @@ func RegisterEndPoints(router *gin.RouterGroup, usecase exam.UseCase) {
 	exams := router.Group("/exams")
 	{
 		exams.GET("", h.Get)
+		exams.GET("/:id", h.GetDetail)
 	}
 }
