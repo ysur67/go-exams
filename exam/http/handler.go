@@ -43,7 +43,6 @@ func (handler *Handler) Get(ctx *gin.Context) {
 	resp := getResponse{
 		exams: jsonExams,
 	}
-	fmt.Println(resp)
 	ctx.JSON(
 		http.StatusOK,
 		resp,
