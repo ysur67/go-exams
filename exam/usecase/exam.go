@@ -8,10 +8,10 @@ import (
 )
 
 type ExamUseCase struct {
-	examRepo exam.Repository
+	examRepo exam.ExamRepository
 }
 
-func NewExamUseCase(repo exam.Repository) *ExamUseCase {
+func NewExamUseCase(repo exam.ExamRepository) *ExamUseCase {
 	return &ExamUseCase{
 		examRepo: repo,
 	}
