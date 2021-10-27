@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"example.com/exams/server"
@@ -10,7 +9,6 @@ import (
 
 func main() {
 	godotenv.Load()
-	fmt.Println("asd")
 	app := server.NewApp()
 	app.Run(os.Getenv("app-port"))
 }
