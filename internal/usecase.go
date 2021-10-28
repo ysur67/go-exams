@@ -8,7 +8,7 @@ import (
 
 type ExamUseCase interface {
 	GetExams(ctx context.Context) ([]models.Exam, error)
-	GetDetailExam(ctx context.Context, examId string) (models.Exam, error)
+	GetDetailExam(ctx context.Context, examId string) (models.ExamDetail, error)
 }
 
 type QuestionUseCase interface {

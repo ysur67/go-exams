@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	exam "example.com/internal"
+	answerHttp "example.com/internal/answer/http"
 	"example.com/models"
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,15 @@ type Question struct {
 	ExamId string `json:"examId"`
 	Number int    `json:"nubmer"`
 	Body   string `json:"body"`
+}
+
+type QuestionDetail struct {
+	Id      string              `json:"id"`
+	Title   string              `json:"title"`
+	ExamId  string              `json:"examId"`
+	Number  int                 `json:"nubmer"`
+	Body    string              `json:"body"`
+	Answers []answerHttp.Answer `json:"answers"`
 }
 
 type Handler struct {
@@ -95,5 +105,16 @@ func toModel(quest Question, exam models.Exam) models.Question {
 		Exam:   exam,
 		Body:   quest.Body,
 		Number: quest.Number,
+	}
+}
+
+func ToDetailQuestion(quest models.QuestionDetail) QuestionDetail {
+	return QuestionDetail{
+		Id:      quest.Id,
+		ExamId:  quest.Exam.Id,
+		Title:   quest.Title,
+		Body:    quest.Body,
+		Number:  quest.Number,
+		Answers: answerHttp.ToAnswers(quest.Answers),
 	}
 }

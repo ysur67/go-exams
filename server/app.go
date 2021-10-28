@@ -46,7 +46,7 @@ func NewApp() *App {
 	answerRepo.InitTables(ctx)
 
 	return &App{
-		examUseCase:     examUseCase.NewExamUseCase(examRepo),
+		examUseCase:     examUseCase.NewExamUseCase(examRepo, questionRepo, answerRepo),
 		questionUseCase: questUseCase.NewQuestoinUseCase(questionRepo, examRepo),
 		answerUseCase:   answerUseCase.NewAnswerRepository(answerRepo),
 	}

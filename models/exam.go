@@ -9,3 +9,12 @@ type Exam struct {
 	FinishDate time.Time
 	IsActive   bool
 }
+
+type ExamDetail struct {
+	Id         string
+	Title      string
+	StartDate  time.Time
+	FinishDate time.Time
+	IsActive   bool
+	Questions  []QuestionDetail
+}
