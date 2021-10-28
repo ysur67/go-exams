@@ -83,7 +83,7 @@ func ToModel(quest Question) models.Question {
 		Number: quest.Number,
 		Title:  quest.Title,
 		Body:   quest.Body,
-		Exam:   repositoryModels.ToExam(quest.Exam),
+		Exam:   repositoryModels.ToModel(quest.Exam),
 	}
 }
 

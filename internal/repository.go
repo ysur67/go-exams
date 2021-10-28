@@ -10,6 +10,7 @@ type ExamRepository interface {
 	InitTables(ctx context.Context) error
 	GetExams(ctx context.Context) ([]models.Exam, error)
 	GetDetailExam(ctx context.Context, examId string) (models.Exam, error)
+	CreateExam(ctx context.Context, exam models.Exam) error
 }
 
 type QuestionRepository interface {

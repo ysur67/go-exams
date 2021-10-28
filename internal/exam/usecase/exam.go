@@ -25,6 +25,10 @@ func (useCase *ExamUseCase) GetExams(ctx context.Context) ([]models.Exam, error)
 	return useCase.examRepo.GetExams(ctx)
 }
 
+func (useCase *ExamUseCase) CreateExam(ctx context.Context, exam models.Exam) error {
+	return useCase.examRepo.CreateExam(ctx, exam)
+}
+
 func (useCase *ExamUseCase) GetDetailExam(ctx context.Context, examId string) (models.ExamDetail, error) {
 	emptyExam := models.ExamDetail{}
 	exam, err := useCase.examRepo.GetDetailExam(ctx, examId)

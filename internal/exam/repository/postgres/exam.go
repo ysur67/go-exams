@@ -51,7 +51,7 @@ func (repo *ExamRepository) GetExams(ctx context.Context) ([]models.Exam, error)
 		fmt.Println(err.Error())
 		return nil, err
 	}
-	return toExams(exams), nil
+	return toModels(exams), nil
 }
 
 func (repo *ExamRepository) GetDetailExam(ctx context.Context, examId string) (models.Exam, error) {
@@ -60,23 +60,46 @@ func (repo *ExamRepository) GetDetailExam(ctx context.Context, examId string) (m
 		Table(EXAM).
 		Where("id = ?", examId).
 		Scan(ctx, &exam)
-	return ToExam(exam), err
+	return ToModel(exam), err
 }
 
-func toExams(exams []Exam) []models.Exam {
+func (repo *ExamRepository) CreateExam(ctx context.Context, exam models.Exam) error {
+	dbExam := toExam(exam)
+	_, err := repo.db.NewInsert().
+		Model(&dbExam).
+		On("CONFLICT (id) DO UPDATE").
+		Exec(ctx)
+	return err
+}
+
+func toModels(exams []Exam) []models.Exam {
 	out := make([]models.Exam, len(exams))
 	for index, exam := range exams {
-		out[index] = ToExam(exam)
+		out[index] = ToModel(exam)
 	}
 	return out
 }
 
-func ToExam(exam Exam) models.Exam {
+func ToModel(exam Exam) models.Exam {
 	return models.Exam{
 		Id:         strconv.Itoa(int(exam.Id)),
 		Title:      exam.Title,
 		StartDate:  exam.Startdate,
 		FinishDate: exam.Finishdate,
 		IsActive:   exam.Isactive,
+	}
+}
+
+func toExam(model models.Exam) Exam {
+	modelId, err := strconv.Atoi(model.Id)
+	if err != nil {
+		panic(err)
+	}
+	return Exam{
+		Id:         int64(modelId),
+		Title:      model.Title,
+		Startdate:  model.StartDate,
+		Finishdate: model.FinishDate,
+		Isactive:   model.IsActive,
 	}
 }

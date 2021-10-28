@@ -11,5 +11,6 @@ func RegisterEndPoints(router *gin.RouterGroup, usecase exam.ExamUseCase) {
 	{
 		exams.GET("", h.Get)
 		exams.GET("/:examId", h.GetDetail)
+		exams.POST("", h.Create)
 	}
 }

@@ -67,6 +67,26 @@ func (handler *Handler) GetDetail(ctx *gin.Context) {
 	)
 }
 
+func (handler *Handler) Create(ctx *gin.Context) {
+	var exam Exam
+	err := ctx.ShouldBind(&exam)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+	}
+	err = handler.examUseCase.CreateExam(ctx, toModel(exam))
+	if err != nil {
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			err.Error(),
+		)
+		return
+	}
+	ctx.JSON(
+		http.StatusCreated,
+		"ok",
+	)
+}
+
 func toExams(exams []models.Exam) []Exam {
 	out := make([]Exam, len(exams))
 	for index, exam := range exams {
@@ -97,5 +117,15 @@ func toDetailExam(exam models.ExamDetail) DetailExam {
 		FinishDate: exam.FinishDate,
 		IsActive:   exam.IsActive,
 		Questions:  detailQuestions,
+	}
+}
+
+func toModel(exam Exam) models.Exam {
+	return models.Exam{
+		Id:         exam.Id,
+		Title:      exam.Title,
+		StartDate:  exam.StartDate,
+		FinishDate: exam.FinishDate,
+		IsActive:   exam.IsActive,
 	}
 }
