@@ -7,9 +7,8 @@ import (
 
 func RegisterEndPoints(router *gin.RouterGroup, useCase exam.AnswerUseCase) {
 	handler := NewHandler(useCase)
-	answers := router.Group("/exams/:examId/questions/:questionid/answers")
+	answers := router.Group("/answers")
 	{
-		answers.GET("", handler.Get)
 		answers.POST("", handler.Create)
 	}
 }
