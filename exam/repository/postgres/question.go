@@ -34,7 +34,6 @@ func NewQuestionRepository(db *bun.DB) *QuestionRepository {
 func (repo *QuestionRepository) InitTables(ctx context.Context) error {
 	_, err := repo.db.NewCreateTable().
 		Model((*Question)(nil)).
-		Table("question").
 		IfNotExists().
 		Varchar(300).
 		ForeignKey(`("exam_id") REFERENCES "exam" ("id") ON DELETE CASCADE`).
@@ -46,6 +45,7 @@ func (repo *QuestionRepository) GetQuestions(ctx context.Context, examId string)
 	questions := make([]Question, 0)
 	err := repo.db.NewSelect().
 		Table(QUESTION).
+		Where("exam_id = ?", examId).
 		Scan(ctx, &questions)
 	return toModels(questions), err
 }

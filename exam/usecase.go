@@ -16,3 +16,7 @@ type QuestionUseCase interface {
 	GetExam(ctx context.Context, examId string) (models.Exam, error)
 	CreateQuestion(ctx context.Context, question models.Question) error
 }
+
+type AnswerUseCase interface {
+	GetAnswers(ctx context.Context, questId string) ([]models.Answer, error)
+}

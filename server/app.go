@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"example.com/exams/exam"
+	answerhttp "example.com/exams/exam/http/answer"
 	examhttp "example.com/exams/exam/http/exam"
 	questhttp "example.com/exams/exam/http/question"
 	"example.com/exams/exam/repository/postgres"
@@ -25,20 +26,25 @@ type App struct {
 
 	examUseCase     exam.ExamUseCase
 	questionUseCase exam.QuestionUseCase
+	answerUseCase   exam.AnswerUseCase
 }
 
 func NewApp() *App {
 	db := initDb()
+	ctx := context.Background()
 	questionRepo := postgres.NewQuestionRepository(db)
-	err := questionRepo.InitTables(context.Background())
+	err := questionRepo.InitTables(ctx)
 	if err != nil {
 		panic(err)
 	}
 	examRepo := postgres.NewExamRepository(db)
+	answerRepo := postgres.NewAnswerRepository(db)
+	answerRepo.InitTables(ctx)
 
 	return &App{
 		examUseCase:     usecase.NewExamUseCase(examRepo),
 		questionUseCase: usecase.NewQuestoinUseCase(questionRepo, examRepo),
+		answerUseCase:   usecase.NewAnswerRepository(answerRepo),
 	}
 }
 
@@ -53,6 +59,7 @@ func (app *App) Run(port string) error {
 
 	examhttp.RegisterEndPoints(api, app.examUseCase)
 	questhttp.RegisterEndPoints(api, app.questionUseCase)
+	answerhttp.RegisterEndPoints(api, app.answerUseCase)
 
 	// HTTP Server
 	app.server = &http.Server{

@@ -10,6 +10,6 @@ func RegisterEndPoints(router *gin.RouterGroup, usecase exam.ExamUseCase) {
 	exams := router.Group("/exams")
 	{
 		exams.GET("", h.Get)
-		exams.GET("/:id", h.GetDetail)
+		exams.GET("/:examId", h.GetDetail)
 	}
 }
