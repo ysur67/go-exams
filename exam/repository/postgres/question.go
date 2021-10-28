@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	QUESTION = "question"
+	QUESTION = "questions"
 )
 
 type Question struct {
@@ -29,6 +29,17 @@ func NewQuestionRepository(db *bun.DB) *QuestionRepository {
 	return &QuestionRepository{
 		db: db,
 	}
+}
+
+func (repo *QuestionRepository) InitTables(ctx context.Context) error {
+	_, err := repo.db.NewCreateTable().
+		Model((*Question)(nil)).
+		Table("question").
+		IfNotExists().
+		Varchar(300).
+		ForeignKey(`("exam_id") REFERENCES "exam" ("id") ON DELETE CASCADE`).
+		Exec(ctx)
+	return err
 }
 
 func (repo *QuestionRepository) GetQuestions(ctx context.Context, examId string) ([]models.Question, error) {

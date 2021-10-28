@@ -29,10 +29,14 @@ type App struct {
 
 func NewApp() *App {
 	db := initDb()
-
+	questionRepo := postgres.NewQuestionRepository(db)
+	err := questionRepo.InitTables(context.Background())
+	if err != nil {
+		panic(err)
+	}
 	return &App{
 		examUseCase:     usecase.NewExamUseCase(postgres.NewExamRepository(db)),
-		questionUseCase: usecase.NewQuestoinUseCase(postgres.NewQuestionRepository(db)),
+		questionUseCase: usecase.NewQuestoinUseCase(questionRepo),
 	}
 }
 
