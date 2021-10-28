@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"example.com/exams/models"
+	"example.com/models"
 	"github.com/uptrace/bun"
 )
 
@@ -54,18 +54,18 @@ func (repo *ExamRepository) GetDetailExam(ctx context.Context, examId string) (m
 		Table(EXAM).
 		Where("id = ?", examId).
 		Scan(ctx, &exam)
-	return toExam(exam), err
+	return ToExam(exam), err
 }
 
 func toExams(exams []Exam) []models.Exam {
 	out := make([]models.Exam, len(exams))
 	for index, exam := range exams {
-		out[index] = toExam(exam)
+		out[index] = ToExam(exam)
 	}
 	return out
 }
 
-func toExam(exam Exam) models.Exam {
+func ToExam(exam Exam) models.Exam {
 	return models.Exam{
 		Id:         strconv.Itoa(int(exam.Id)),
 		Title:      exam.Title,

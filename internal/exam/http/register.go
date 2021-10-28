@@ -1,7 +1,7 @@
-package examhttp
+package http
 
 import (
-	"example.com/exams/exam"
+	exam "example.com/internal"
 	"github.com/gin-gonic/gin"
 )
 

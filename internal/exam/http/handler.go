@@ -1,12 +1,12 @@
-package examhttp
+package http
 
 import (
 	"fmt"
 	"net/http"
 	"time"
 
-	"example.com/exams/exam"
-	"example.com/exams/models"
+	exam "example.com/internal"
+	"example.com/models"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,10 +1,10 @@
-package answerhttp
+package http
 
 import (
 	"net/http"
 
-	"example.com/exams/exam"
-	"example.com/exams/models"
+	exam "example.com/internal"
+	"example.com/models"
 	"github.com/gin-gonic/gin"
 )
 

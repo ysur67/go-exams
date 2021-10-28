@@ -4,7 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"example.com/exams/models"
+	repositoryModels "example.com/internal/exam/repository/postgres"
+	"example.com/models"
 	"github.com/uptrace/bun"
 )
 
@@ -15,7 +16,7 @@ const (
 type Question struct {
 	Id     int64
 	ExamId int64
-	Exam   Exam `bun:"rel:has-one"`
+	Exam   repositoryModels.Exam `bun:"rel:has-one"`
 	Number int
 	Title  string
 	Body   string
@@ -62,18 +63,18 @@ func (repo *QuestionRepository) CreateQuestion(ctx context.Context, question mod
 func toModels(questoins []Question) []models.Question {
 	out := make([]models.Question, len(questoins))
 	for index, quest := range questoins {
-		out[index] = toModel(quest)
+		out[index] = ToModel(quest)
 	}
 	return out
 }
 
-func toModel(quest Question) models.Question {
+func ToModel(quest Question) models.Question {
 	return models.Question{
 		Id:     strconv.Itoa(int(quest.Id)),
 		Number: quest.Number,
 		Title:  quest.Title,
 		Body:   quest.Body,
-		Exam:   toExam(quest.Exam),
+		Exam:   repositoryModels.ToExam(quest.Exam),
 	}
 }
 

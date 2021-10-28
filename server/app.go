@@ -9,12 +9,16 @@ import (
 	"os/signal"
 	"time"
 
-	"example.com/exams/exam"
-	answerhttp "example.com/exams/exam/http/answer"
-	examhttp "example.com/exams/exam/http/exam"
-	questhttp "example.com/exams/exam/http/question"
-	"example.com/exams/exam/repository/postgres"
-	"example.com/exams/exam/usecase"
+	exam "example.com/internal"
+	answerhttp "example.com/internal/answer/http"
+	answerRepo "example.com/internal/answer/repository/postgres"
+	answerUseCase "example.com/internal/answer/usecase"
+	examhttp "example.com/internal/exam/http"
+	examRepo "example.com/internal/exam/repository/postgres"
+	examUseCase "example.com/internal/exam/usecase"
+	questionhttp "example.com/internal/question/http"
+	questionRepo "example.com/internal/question/repository/postgres"
+	questUseCase "example.com/internal/question/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -32,19 +36,19 @@ type App struct {
 func NewApp() *App {
 	db := initDb()
 	ctx := context.Background()
-	questionRepo := postgres.NewQuestionRepository(db)
+	questionRepo := questionRepo.NewQuestionRepository(db)
 	err := questionRepo.InitTables(ctx)
 	if err != nil {
 		panic(err)
 	}
-	examRepo := postgres.NewExamRepository(db)
-	answerRepo := postgres.NewAnswerRepository(db)
+	examRepo := examRepo.NewExamRepository(db)
+	answerRepo := answerRepo.NewAnswerRepository(db)
 	answerRepo.InitTables(ctx)
 
 	return &App{
-		examUseCase:     usecase.NewExamUseCase(examRepo),
-		questionUseCase: usecase.NewQuestoinUseCase(questionRepo, examRepo),
-		answerUseCase:   usecase.NewAnswerRepository(answerRepo),
+		examUseCase:     examUseCase.NewExamUseCase(examRepo),
+		questionUseCase: questUseCase.NewQuestoinUseCase(questionRepo, examRepo),
+		answerUseCase:   answerUseCase.NewAnswerRepository(answerRepo),
 	}
 }
 
@@ -58,7 +62,7 @@ func (app *App) Run(port string) error {
 	api := router.Group("/api")
 
 	examhttp.RegisterEndPoints(api, app.examUseCase)
-	questhttp.RegisterEndPoints(api, app.questionUseCase)
+	questionhttp.RegisterEndPoints(api, app.questionUseCase)
 	answerhttp.RegisterEndPoints(api, app.answerUseCase)
 
 	// HTTP Server

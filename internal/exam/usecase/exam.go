@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"example.com/exams/exam"
-	"example.com/exams/models"
+	exam "example.com/internal"
+	"example.com/models"
 )
 
 type ExamUseCase struct {
