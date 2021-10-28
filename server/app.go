@@ -48,7 +48,7 @@ func NewApp() *App {
 	return &App{
 		examUseCase:     examUseCase.NewExamUseCase(examRepo, questionRepo, answerRepo),
 		questionUseCase: questUseCase.NewQuestoinUseCase(questionRepo, examRepo),
-		answerUseCase:   answerUseCase.NewAnswerRepository(answerRepo),
+		answerUseCase:   answerUseCase.NewAnswerRepository(answerRepo, questionRepo),
 	}
 }
 

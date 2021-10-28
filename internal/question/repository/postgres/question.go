@@ -42,6 +42,15 @@ func (repo *QuestionRepository) InitTables(ctx context.Context) error {
 	return err
 }
 
+func (repo *QuestionRepository) GetQuestion(ctx context.Context, id string) (models.Question, error) {
+	question := Question{}
+	err := repo.db.NewSelect().
+		Table(QUESTION).
+		Where("id = ?", id).
+		Scan(ctx, &question)
+	return ToModel(question), err
+}
+
 func (repo *QuestionRepository) GetQuestions(ctx context.Context, examId string) ([]models.Question, error) {
 	questions := make([]Question, 0)
 	err := repo.db.NewSelect().
@@ -52,7 +61,7 @@ func (repo *QuestionRepository) GetQuestions(ctx context.Context, examId string)
 }
 
 func (repo *QuestionRepository) CreateQuestion(ctx context.Context, question models.Question) error {
-	dbQuest := toQuestion(question)
+	dbQuest := ToQuestion(question)
 	_, err := repo.db.NewInsert().
 		Model(&dbQuest).
 		On("CONFLICT (id) DO UPDATE").
@@ -78,7 +87,7 @@ func ToModel(quest Question) models.Question {
 	}
 }
 
-func toQuestion(quest models.Question) Question {
+func ToQuestion(quest models.Question) Question {
 	qId, err := strconv.Atoi(quest.Id)
 	if err != nil {
 		panic(err)

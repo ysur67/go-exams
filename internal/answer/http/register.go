@@ -10,5 +10,6 @@ func RegisterEndPoints(router *gin.RouterGroup, useCase exam.AnswerUseCase) {
 	answers := router.Group("/exams/:examId/questions/:questionid/answers")
 	{
 		answers.GET("", handler.Get)
+		answers.POST("", handler.Create)
 	}
 }

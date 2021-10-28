@@ -19,4 +19,6 @@ type QuestionUseCase interface {
 
 type AnswerUseCase interface {
 	GetAnswers(ctx context.Context, questId string) ([]models.Answer, error)
+	GetQuestion(ctx context.Context, questId string) (models.Question, error)
+	CreateAnswer(ctx context.Context, answer models.Answer) error
 }
