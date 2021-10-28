@@ -9,10 +9,16 @@ import (
 	"os/signal"
 	"time"
 
-	"example.com/exams/exam"
-	examhttp "example.com/exams/exam/http"
-	"example.com/exams/exam/repository/postgres"
-	"example.com/exams/exam/usecase"
+	exam "example.com/internal"
+	answerhttp "example.com/internal/answer/http"
+	answerRepo "example.com/internal/answer/repository/postgres"
+	answerUseCase "example.com/internal/answer/usecase"
+	examhttp "example.com/internal/exam/http"
+	examRepo "example.com/internal/exam/repository/postgres"
+	examUseCase "example.com/internal/exam/usecase"
+	questionhttp "example.com/internal/question/http"
+	questionRepo "example.com/internal/question/repository/postgres"
+	questUseCase "example.com/internal/question/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -22,16 +28,27 @@ import (
 type App struct {
 	server *http.Server
 
-	examUseCase exam.UseCase
+	examUseCase     exam.ExamUseCase
+	questionUseCase exam.QuestionUseCase
+	answerUseCase   exam.AnswerUseCase
 }
 
 func NewApp() *App {
 	db := initDb()
+	ctx := context.Background()
+	questionRepo := questionRepo.NewQuestionRepository(db)
+	err := questionRepo.InitTables(ctx)
+	if err != nil {
+		panic(err)
+	}
+	examRepo := examRepo.NewExamRepository(db)
+	answerRepo := answerRepo.NewAnswerRepository(db)
+	answerRepo.InitTables(ctx)
 
-	examRepository := postgres.NewExamRepository(db)
-	useCase := usecase.NewExamUseCase(examRepository)
 	return &App{
-		examUseCase: useCase,
+		examUseCase:     examUseCase.NewExamUseCase(examRepo, questionRepo, answerRepo),
+		questionUseCase: questUseCase.NewQuestoinUseCase(questionRepo, examRepo),
+		answerUseCase:   answerUseCase.NewAnswerRepository(answerRepo),
 	}
 }
 
@@ -45,6 +62,8 @@ func (app *App) Run(port string) error {
 	api := router.Group("/api")
 
 	examhttp.RegisterEndPoints(api, app.examUseCase)
+	questionhttp.RegisterEndPoints(api, app.questionUseCase)
+	answerhttp.RegisterEndPoints(api, app.answerUseCase)
 
 	// HTTP Server
 	app.server = &http.Server{
