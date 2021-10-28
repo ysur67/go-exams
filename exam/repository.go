@@ -15,4 +15,5 @@ type ExamRepository interface {
 type QuestionRepository interface {
 	InitTables(ctx context.Context) error
 	GetQuestions(ctx context.Context, examId string) ([]models.Question, error)
+	CreateQuestion(ctx context.Context, question models.Question) error
 }

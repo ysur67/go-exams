@@ -34,9 +34,11 @@ func NewApp() *App {
 	if err != nil {
 		panic(err)
 	}
+	examRepo := postgres.NewExamRepository(db)
+
 	return &App{
-		examUseCase:     usecase.NewExamUseCase(postgres.NewExamRepository(db)),
-		questionUseCase: usecase.NewQuestoinUseCase(questionRepo),
+		examUseCase:     usecase.NewExamUseCase(examRepo),
+		questionUseCase: usecase.NewQuestoinUseCase(questionRepo, examRepo),
 	}
 }
 

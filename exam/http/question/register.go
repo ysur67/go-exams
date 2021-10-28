@@ -10,5 +10,6 @@ func RegisterEndPoints(router *gin.RouterGroup, usecase exam.QuestionUseCase) {
 	quests := router.Group("/exams/:id/questions")
 	{
 		quests.GET("", h.Get)
+		quests.POST("", h.Create)
 	}
 }

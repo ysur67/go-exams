@@ -41,6 +41,35 @@ func (handler *Handler) Get(ctx *gin.Context) {
 	)
 }
 
+func (handler *Handler) Create(ctx *gin.Context) {
+	var question Question
+	err := ctx.ShouldBind(&question)
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest,
+			err.Error(),
+		)
+		return
+	}
+	exam, err := handler.questionUseCase.GetExam(ctx, question.ExamId)
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest,
+			err.Error(),
+		)
+		return
+	}
+	err = handler.questionUseCase.CreateQuestion(ctx, toModel(question, exam))
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest,
+			err.Error(),
+		)
+		return
+	}
+
+}
+
 func toQuestions(questions []models.Question) []Question {
 	out := make([]Question, len(questions))
 	for index, quest := range questions {
@@ -54,6 +83,16 @@ func toQuestion(quest models.Question) Question {
 		Id:     quest.Id,
 		ExamId: quest.Exam.Id,
 		Title:  quest.Title,
+		Body:   quest.Body,
+		Number: quest.Number,
+	}
+}
+
+func toModel(quest Question, exam models.Exam) models.Question {
+	return models.Question{
+		Id:     quest.Id,
+		Title:  quest.Title,
+		Exam:   exam,
 		Body:   quest.Body,
 		Number: quest.Number,
 	}

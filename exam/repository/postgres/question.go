@@ -47,23 +47,50 @@ func (repo *QuestionRepository) GetQuestions(ctx context.Context, examId string)
 	err := repo.db.NewSelect().
 		Table(QUESTION).
 		Scan(ctx, &questions)
-	return toQuestions(questions), err
+	return toModels(questions), err
 }
 
-func toQuestions(questoins []Question) []models.Question {
+func (repo *QuestionRepository) CreateQuestion(ctx context.Context, question models.Question) error {
+	dbQuest := toQuestion(question)
+	_, err := repo.db.NewInsert().
+		Model(&dbQuest).
+		On("CONFLICT (id) DO UPDATE").
+		Exec(ctx)
+	return err
+}
+
+func toModels(questoins []Question) []models.Question {
 	out := make([]models.Question, len(questoins))
 	for index, quest := range questoins {
-		out[index] = toQuestion(quest)
+		out[index] = toModel(quest)
 	}
 	return out
 }
 
-func toQuestion(quest Question) models.Question {
+func toModel(quest Question) models.Question {
 	return models.Question{
 		Id:     strconv.Itoa(int(quest.Id)),
 		Number: quest.Number,
 		Title:  quest.Title,
 		Body:   quest.Body,
 		Exam:   toExam(quest.Exam),
+	}
+}
+
+func toQuestion(quest models.Question) Question {
+	qId, err := strconv.Atoi(quest.Id)
+	if err != nil {
+		panic(err)
+	}
+	examId, err := strconv.Atoi(quest.Exam.Id)
+	if err != nil {
+		panic(err)
+	}
+	return Question{
+		Id:     int64(qId),
+		ExamId: int64(examId),
+		Number: quest.Number,
+		Title:  quest.Title,
+		Body:   quest.Body,
 	}
 }
