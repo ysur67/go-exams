@@ -32,8 +32,14 @@ func NewExamRepository(db *bun.DB) *ExamRepository {
 	}
 }
 
-func (repo *ExamRepository) InitTables(ctx context.Context) {
-	repo.db.NewCreateTable().Model(&Exam{}).Table("exam").Temp().IfNotExists().Varchar(300).Exec(ctx)
+func (repo *ExamRepository) InitTables(ctx context.Context) error {
+	_, err := repo.db.NewCreateTable().
+		Model(&Exam{}).
+		Table("exam").
+		IfNotExists().
+		Varchar(300).
+		Exec(ctx)
+	return err
 }
 
 func (repo *ExamRepository) GetExams(ctx context.Context) ([]models.Exam, error) {

@@ -12,7 +12,7 @@ type AnswerUseCase struct {
 	questionRepo exam.QuestionRepository
 }
 
-func NewAnswerRepository(answerRepo exam.AnswerRepository, questionRepo exam.QuestionRepository) *AnswerUseCase {
+func NewAnswerUseCase(answerRepo exam.AnswerRepository, questionRepo exam.QuestionRepository) *AnswerUseCase {
 	return &AnswerUseCase{
 		answerRepo:   answerRepo,
 		questionRepo: questionRepo,

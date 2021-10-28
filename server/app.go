@@ -42,13 +42,20 @@ func NewApp() *App {
 		panic(err)
 	}
 	examRepo := examRepo.NewExamRepository(db)
+	err = examRepo.InitTables(ctx)
+	if err != nil {
+		panic(err)
+	}
 	answerRepo := answerRepo.NewAnswerRepository(db)
-	answerRepo.InitTables(ctx)
+	err = answerRepo.InitTables(ctx)
+	if err != nil {
+		panic(err)
+	}
 
 	return &App{
 		examUseCase:     examUseCase.NewExamUseCase(examRepo, questionRepo, answerRepo),
 		questionUseCase: questUseCase.NewQuestoinUseCase(questionRepo, examRepo),
-		answerUseCase:   answerUseCase.NewAnswerRepository(answerRepo, questionRepo),
+		answerUseCase:   answerUseCase.NewAnswerUseCase(answerRepo, questionRepo),
 	}
 }
 
@@ -58,14 +65,11 @@ func (app *App) Run(port string) error {
 		gin.Recovery(),
 		gin.Logger(),
 	)
-
 	api := router.Group("/api")
-
 	examhttp.RegisterEndPoints(api, app.examUseCase)
 	questionhttp.RegisterEndPoints(api, app.questionUseCase)
 	answerhttp.RegisterEndPoints(api, app.answerUseCase)
 
-	// HTTP Server
 	app.server = &http.Server{
 		Addr:           ":" + port,
 		Handler:        router,
