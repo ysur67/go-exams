@@ -1,10 +1,10 @@
-package answerhttp
+package http
 
 import (
 	"net/http"
 
-	"example.com/exams/exam"
-	"example.com/exams/models"
+	exam "example.com/internal"
+	"example.com/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,14 +33,14 @@ func (handler Handler) Get(ctx *gin.Context) {
 			err.Error(),
 		)
 	}
-	jsonAnswers := toAnswers(answers)
+	jsonAnswers := ToAnswers(answers)
 	ctx.JSON(
 		http.StatusOK,
 		jsonAnswers,
 	)
 }
 
-func toAnswers(answers []models.Answer) []Answer {
+func ToAnswers(answers []models.Answer) []Answer {
 	out := make([]Answer, len(answers))
 	for index, answ := range answers {
 		out[index] = toAnswer(answ)

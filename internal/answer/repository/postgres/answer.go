@@ -4,14 +4,15 @@ import (
 	"context"
 	"strconv"
 
-	"example.com/exams/models"
+	repositoryModels "example.com/internal/question/repository/postgres"
+	"example.com/models"
 	"github.com/uptrace/bun"
 )
 
 type Answer struct {
 	Id         int64
 	QuestionId int64
-	Question   Question `bun:"rel:has-one"`
+	Question   repositoryModels.Question `bun:"rel:has-one"`
 	Title      string
 	IsCorrect  bool
 }
@@ -65,7 +66,7 @@ func toAnswModel(answer Answer) models.Answer {
 	return models.Answer{
 		Id:        strconv.Itoa(int(answer.Id)),
 		Title:     answer.Title,
-		Question:  toModel(answer.Question),
+		Question:  repositoryModels.ToModel(answer.Question),
 		IsCorrect: answer.IsCorrect,
 	}
 }

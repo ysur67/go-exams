@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"example.com/exams/server"
+	"example.com/server"
 	"github.com/joho/godotenv"
 )
 
