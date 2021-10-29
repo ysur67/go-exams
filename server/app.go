@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	exam "example.com/internal"
@@ -23,6 +24,7 @@ import (
 	questionRepo "example.com/internal/question/repository/postgres"
 	questUseCase "example.com/internal/question/usecase"
 	"github.com/gin-gonic/gin"
+	"github.com/go-testfixtures/testfixtures/v3"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -56,6 +58,12 @@ func NewApp() *App {
 	userRepo := userRepo.NewUserRepository(db)
 	if err := userRepo.InitTables(ctx); err != nil {
 		panic(err)
+	}
+	shouldLoadFixtures := getOptions()
+	if shouldLoadFixtures {
+		if err := loadFixtures(db); err != nil {
+			panic(err)
+		}
 	}
 	ttlDuration, err := str2duration.ParseDuration(os.Getenv("token-ttl"))
 	if err != nil {
@@ -123,4 +131,31 @@ func initDb() *bun.DB {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	return db
+}
+
+func getOptions() bool {
+	cmd := os.Args[1:]
+	if len(cmd) < 1 {
+		return false
+	}
+	shouldLoadFixtures := cmd[0]
+	return strings.Contains(shouldLoadFixtures, "load-fixtures")
+}
+
+func loadFixtures(db *bun.DB) error {
+	fixtures, err := testfixtures.New(
+		testfixtures.Database(db.DB),
+		testfixtures.Dialect("postgres"),
+		testfixtures.Paths(
+			"configs/fixtures/users.yml",
+			"configs/fixtures/exams.yml",
+			"configs/fixtures/questions.yml",
+			"configs/fixtures/answers.yml",
+		),
+		testfixtures.DangerousSkipTestDatabaseCheck(),
+	)
+	if err != nil {
+		panic(err)
+	}
+	return fixtures.Load()
 }

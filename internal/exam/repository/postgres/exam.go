@@ -35,7 +35,6 @@ func NewExamRepository(db *bun.DB) *ExamRepository {
 func (repo *ExamRepository) InitTables(ctx context.Context) error {
 	_, err := repo.db.NewCreateTable().
 		Model(&Exam{}).
-		Table("exam").
 		IfNotExists().
 		Varchar(300).
 		Exec(ctx)
@@ -57,7 +56,7 @@ func (repo *ExamRepository) GetExams(ctx context.Context) ([]models.Exam, error)
 func (repo *ExamRepository) GetDetailExam(ctx context.Context, examId string) (models.Exam, error) {
 	exam := Exam{}
 	err := repo.db.NewSelect().
-		Table(EXAM).
+		Model(&exam).
 		Where("id = ?", examId).
 		Scan(ctx, &exam)
 	return ToModel(exam), err
