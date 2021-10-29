@@ -93,7 +93,6 @@ func toAnswer(model models.Answer) Answer {
 		Id:         int64(modelId),
 		Title:      model.Title,
 		QuestionId: int64(modelQuestionId),
-		// Question:   repositoryModels.ToQuestion(model.Question),
-		IsCorrect: model.IsCorrect,
+		IsCorrect:  model.IsCorrect,
 	}
 }

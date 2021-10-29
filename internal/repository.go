@@ -25,3 +25,9 @@ type AnswerRepository interface {
 	GetAnswers(ctx context.Context, questId string) ([]models.Answer, error)
 	CreateAnswer(ctx context.Context, answer models.Answer) error
 }
+
+type UserRepository interface {
+	InitTables(ctx context.Context) error
+	CreateUser(ctx context.Context, user models.User) error
+	GetUser(ctx context.Context, authParams models.LoginParam) (models.User, error)
+}

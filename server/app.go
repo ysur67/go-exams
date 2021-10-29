@@ -13,6 +13,9 @@ import (
 	answerhttp "example.com/internal/answer/http"
 	answerRepo "example.com/internal/answer/repository/postgres"
 	answerUseCase "example.com/internal/answer/usecase"
+	authhttp "example.com/internal/auth/http"
+	userRepo "example.com/internal/auth/repository/postgres"
+	userUseCase "example.com/internal/auth/usecase"
 	examhttp "example.com/internal/exam/http"
 	examRepo "example.com/internal/exam/repository/postgres"
 	examUseCase "example.com/internal/exam/usecase"
@@ -23,6 +26,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
+	"github.com/xhit/go-str2duration/v2"
 )
 
 type App struct {
@@ -31,31 +35,42 @@ type App struct {
 	examUseCase     exam.ExamUseCase
 	questionUseCase exam.QuestionUseCase
 	answerUseCase   exam.AnswerUseCase
+	userUseCase     exam.UserUseCase
 }
 
 func NewApp() *App {
 	db := initDb()
 	ctx := context.Background()
 	questionRepo := questionRepo.NewQuestionRepository(db)
-	err := questionRepo.InitTables(ctx)
-	if err != nil {
+	if err := questionRepo.InitTables(ctx); err != nil {
 		panic(err)
 	}
 	examRepo := examRepo.NewExamRepository(db)
-	err = examRepo.InitTables(ctx)
-	if err != nil {
+	if err := examRepo.InitTables(ctx); err != nil {
 		panic(err)
 	}
 	answerRepo := answerRepo.NewAnswerRepository(db)
-	err = answerRepo.InitTables(ctx)
+	if err := answerRepo.InitTables(ctx); err != nil {
+		panic(err)
+	}
+	userRepo := userRepo.NewUserRepository(db)
+	if err := userRepo.InitTables(ctx); err != nil {
+		panic(err)
+	}
+	ttlDuration, err := str2duration.ParseDuration(os.Getenv("token-ttl"))
 	if err != nil {
 		panic(err)
 	}
-
 	return &App{
 		examUseCase:     examUseCase.NewExamUseCase(examRepo, questionRepo, answerRepo),
 		questionUseCase: questUseCase.NewQuestoinUseCase(questionRepo, examRepo),
 		answerUseCase:   answerUseCase.NewAnswerUseCase(answerRepo, questionRepo),
+		userUseCase: userUseCase.NewUserUseCase(
+			userRepo,
+			os.Getenv("hash-salt"),
+			[]byte(os.Getenv("signin-key")),
+			ttlDuration,
+		),
 	}
 }
 
@@ -65,7 +80,10 @@ func (app *App) Run(port string) error {
 		gin.Recovery(),
 		gin.Logger(),
 	)
-	api := router.Group("/api")
+	authhttp.RegisterHttpEndpoints(router, app.userUseCase)
+
+	authMiddleware := authhttp.NewAuthMiddleware(app.userUseCase)
+	api := router.Group("/api", authMiddleware.Handle)
 	examhttp.RegisterEndPoints(api, app.examUseCase)
 	questionhttp.RegisterEndPoints(api, app.questionUseCase)
 	answerhttp.RegisterEndPoints(api, app.answerUseCase)

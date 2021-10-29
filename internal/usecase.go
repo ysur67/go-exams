@@ -23,3 +23,11 @@ type AnswerUseCase interface {
 	GetQuestion(ctx context.Context, questId string) (models.Question, error)
 	CreateAnswer(ctx context.Context, answer models.Answer) error
 }
+
+const CtxUserKey = "user"
+
+type UserUseCase interface {
+	Register(ctx context.Context, authParams models.LoginParam) error
+	Login(ctx context.Context, authParams models.LoginParam) (string, error)
+	ParseToken(ctx context.Context, accessToken string) (*models.User, error)
+}
