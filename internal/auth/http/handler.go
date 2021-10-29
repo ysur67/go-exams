@@ -18,13 +18,13 @@ func NewHandler(useCase exam.UserUseCase) *Handler {
 	}
 }
 
-type registerInput struct {
+type authInput struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 func (handler *Handler) Register(ctx *gin.Context) {
-	inp := new(registerInput)
+	inp := new(authInput)
 	if err := ctx.BindJSON(inp); err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -39,7 +39,30 @@ func (handler *Handler) Register(ctx *gin.Context) {
 	ctx.Status(http.StatusCreated)
 }
 
-func toModel(register registerInput) *models.LoginParam {
+type signInResponse struct {
+	Token string `json:"token"`
+}
+
+func (handler *Handler) Login(ctx *gin.Context) {
+	inp := new(authInput)
+	if err := ctx.BindJSON(inp); err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	token, err := handler.useCase.Login(ctx.Request.Context(), *toModel(*inp))
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	ctx.JSON(
+		http.StatusOK,
+		signInResponse{
+			Token: token,
+		},
+	)
+}
+
+func toModel(register authInput) *models.LoginParam {
 	return &models.LoginParam{
 		Username: register.Username,
 		Password: register.Password,
