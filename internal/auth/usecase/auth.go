@@ -19,19 +19,19 @@ type AuthClaims struct {
 type UserUseCase struct {
 	userRepo       exam.UserRepository
 	hashSalt       string
-	signInKey      []byte
+	signingKey     []byte
 	expireDuration time.Duration
 }
 
 func NewUserUseCase(
 	userRepo exam.UserRepository,
 	hash string,
-	signInKey []byte,
+	signingKey []byte,
 	tokenTtl time.Duration) *UserUseCase {
 	return &UserUseCase{
 		userRepo:       userRepo,
 		hashSalt:       hash,
-		signInKey:      signInKey,
+		signingKey:     signingKey,
 		expireDuration: time.Second * tokenTtl,
 	}
 }
@@ -49,7 +49,7 @@ func (useCase *UserUseCase) Login(ctx context.Context, authParams models.LoginPa
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(useCase.signInKey)
+	return token.SignedString(useCase.signingKey)
 }
 
 func (useCase *UserUseCase) Register(ctx context.Context, authParams models.LoginParam) error {
@@ -66,7 +66,7 @@ func (useCase *UserUseCase) ParseToken(ctx context.Context, accessToken string) 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return useCase.signInKey, nil
+		return useCase.signingKey, nil
 	})
 
 	if err != nil {

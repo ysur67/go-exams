@@ -76,7 +76,7 @@ func NewApp() *App {
 		userUseCase: userUseCase.NewUserUseCase(
 			userRepo,
 			os.Getenv("hash-salt"),
-			[]byte(os.Getenv("signin-key")),
+			[]byte(os.Getenv("signing-key")),
 			ttlDuration,
 		),
 	}
