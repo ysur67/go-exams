@@ -11,6 +11,7 @@ type ExamRepository interface {
 	GetExams(ctx context.Context) ([]models.Exam, error)
 	GetDetailExam(ctx context.Context, examId string) (models.Exam, error)
 	CreateExam(ctx context.Context, exam models.Exam) error
+	Remove(ctx context.Context, examId string) error
 }
 
 type QuestionRepository interface {

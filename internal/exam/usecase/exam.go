@@ -63,3 +63,7 @@ func (useCase *ExamUseCase) GetDetailExam(ctx context.Context, examId string) (m
 		Questions:  detailQuestions,
 	}, nil
 }
+
+func (useCase *ExamUseCase) RemoveExam(ctx context.Context, params models.RemoveExamParams) error {
+	return useCase.examRepo.Remove(ctx, params.Id)
+}

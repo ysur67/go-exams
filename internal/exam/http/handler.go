@@ -87,6 +87,19 @@ func (handler *Handler) Create(ctx *gin.Context) {
 	)
 }
 
+func (handler *Handler) Delete(ctx *gin.Context) {
+	exam, err := handler.examUseCase.GetDetailExam(ctx, ctx.Param("examId"))
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	handler.examUseCase.RemoveExam(ctx, models.RemoveExamParams{Id: exam.Id})
+	ctx.JSON(
+		http.StatusAccepted,
+		"ok",
+	)
+}
+
 func toExams(exams []models.Exam) []Exam {
 	out := make([]Exam, len(exams))
 	for index, exam := range exams {

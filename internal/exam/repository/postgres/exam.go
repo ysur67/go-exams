@@ -71,6 +71,15 @@ func (repo *ExamRepository) CreateExam(ctx context.Context, exam models.Exam) er
 	return err
 }
 
+func (repo *ExamRepository) Remove(ctx context.Context, examId string) error {
+	exam := new(Exam)
+	_, err := repo.db.NewDelete().
+		Model(exam).
+		Where("id = ?", examId).
+		Exec(ctx)
+	return err
+}
+
 func toModels(exams []Exam) []models.Exam {
 	out := make([]models.Exam, len(exams))
 	for index, exam := range exams {

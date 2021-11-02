@@ -10,6 +10,7 @@ type ExamUseCase interface {
 	GetExams(ctx context.Context) ([]models.Exam, error)
 	GetDetailExam(ctx context.Context, examId string) (models.ExamDetail, error)
 	CreateExam(ctx context.Context, exam models.Exam) error
+	RemoveExam(ctx context.Context, params models.RemoveExamParams) error
 }
 
 type QuestionUseCase interface {

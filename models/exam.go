@@ -18,3 +18,7 @@ type ExamDetail struct {
 	IsActive   bool
 	Questions  []QuestionDetail
 }
+
+type RemoveExamParams struct {
+	Id string
+}
